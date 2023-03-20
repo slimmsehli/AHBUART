@@ -27,4 +27,10 @@ and the out data packets. in the testbench TOP the DUT is used as a transmitter 
 Formal verification is necessary to validate the clocking aspect of the design and it could be used alongside the UVM testbench to capture different
 corners of the verification.
 
+
+Simulation:
+Two files are used for the simulation on questasim simulator, sim.tcl can be sources to launch the simulation, the cmd.do file is used to add waves and to collec coverage for the simulation.
+
+
+
 Created By Slim Msehli
