@@ -8,7 +8,7 @@ The UART have transmitter and receiver modules with their respective configurabl
 The UART contain the following features and registers: 
 - Baudrate genrator, that can be configured via a 16 bits UBRR (Uart baudrate register) that can hold the dividor for the baudrate output signal 
 - Control register is implemented that can configure the UART for the data length, parity bits and stop bits, ans also the oversampling y 8 or by 16
-- Flag regfister is implemented to give a look about the status of the TX and RX FIFO, and also on the main receiver and transmitter incuding, 
+- Flag regfister is implemented to give a look to the status of the TX and RX FIFO, and also on the main receiver and transmitter incuding, 
 RXfifoempty, RXfifofull, TXfifoempty, TXfifofull, TXdone, RXdone, and RXerror for signaling error during receiving data
 
 The core data mode is only 8bits but it can be modified to add different data length by changing the FSM for both RX and TX modules.
