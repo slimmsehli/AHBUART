@@ -3,9 +3,9 @@ AHB UART IP
 
 
 This is the first part of the UART IP with AHB-Lite interface
-the version 1 is a basic configurable UART Core with systemverilog UVM testbench 
-the UART have transmitter and receiver modules with their respective configurable FIFO for buffering
-the UART contain the following features and registers: 
+The version one is a basic configurable UART Core with systemverilog UVM testbench 
+The UART have transmitter and receiver modules with their respective configurable FIFO for buffering.
+The UART contain the following features and registers: 
 - Baudrate genrator, that can be configured via a 16 bits UBRR (Uart baudrate register) that can hold the dividor for the baudrate output signal 
 - Control register is implemented that can configure the UART for the data length, parity bits and stop bits, ans also the oversampling y 8 or by 16
 - Flag regfister is implemented to give a look about the status of the TX and RX FIFO, and also on the main receiver and transmitter incuding, 
