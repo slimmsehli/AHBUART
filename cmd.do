@@ -1,4 +1,5 @@
-coverage save -onexit -codeAll -cvg uart_sim.ucdb
+#coverage save -onexit -codeAll -cvg uart_sim.ucdb
+coverage save -onexit -codeAll -cvg ${1}_${2}.ucdb
 
 add wave -noupdate -group TX /MS_UART_TBTOP/DUT_MSUART/DUT_MS_UART_TX/*
 add wave -noupdate -group TX_FIFO /MS_UART_TBTOP/DUT_MSUART/DUT_MS_UART_FIFO_TX/*
