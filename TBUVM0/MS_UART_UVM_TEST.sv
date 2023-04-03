@@ -1,8 +1,10 @@
 import uvm_pkg::*;
 `include "uvm_macros.svh"
+`include "MS_macros.svh"
 `include "MS_UART_UVM_CFG.sv"
 `include "MS_UART_UVM_ITEM.sv"
 `include "MS_UART_UVM_SEQ.sv"
+`include "MS_UART_UVM_SBUS.sv"
 `include "MS_UART_UVM_MONITOR.sv"
 `include "MS_UART_UVM_DRIVER.sv" 
 `include "MS_UART_UVM_AGENT.sv"
@@ -41,6 +43,7 @@ class uart_test_base extends uvm_test;
 		super.final_phase(phase);
 		`uvm_info("TEST : ", $sformatf("FINAL PHASE"), UVM_HIGH)
 		uvm_root::get().print_topology();
+		//$finish(2);
 	endfunction : final_phase
 endclass : uart_test_base
 
@@ -50,7 +53,7 @@ endclass : uart_test_base
 //----------------------------------------------------------
 class uart_test1 extends uart_test_base;
 	`uvm_component_utils(uart_test1)
-	uart_seq2	tb_seq; 
+	uart_seq1	tb_seq; 
 
   function new(string name = "uart_test1_rand_data", uvm_component parent =  null);
     super.new(name, parent);
@@ -61,13 +64,10 @@ class uart_test1 extends uart_test_base;
 			
 	phase.raise_objection(this);					  
 		`uvm_info("TEST : ", $sformatf("RUN PHASE"), UVM_HIGH)						
-		tb_seq = uart_seq2::type_id::create("SEQ-UART");
-		tb_seq.randdata 	<= 1'b1;
-		tb_seq.randparity 	<= 1'b0;
-		tb_seq.randubrr 	<= 1'b0;
+		tb_seq = uart_seq1::type_id::create("SEQ-UART");
 	fork 
 		begin 
-			`uvm_info("TEST", $sformatf("TEST1 : RANDOMIZE data"), UVM_LOW)
+			`uvm_info("TEST", $sformatf("TEST1 : RANDOMIZE parity"), UVM_LOW)
 			forever begin
 				tb_seq.start(tb_env.tb_agent.tb_seq);
 			end
@@ -88,7 +88,7 @@ endclass : uart_test1
 //----------------------------------------------------------
 class uart_test2 extends uart_test_base;
 	`uvm_component_utils(uart_test2)
-	uart_seq2	tb_seq; 
+	uart_seq1	tb_seq; 
 
   function new(string name = "uart_test2_rand_parity", uvm_component parent =  null);
     super.new(name, parent);
@@ -98,13 +98,10 @@ class uart_test2 extends uart_test_base;
     super.run_phase(phase);
 		`uvm_info("TEST : ", $sformatf("RUN PHASE"), UVM_HIGH)
 		phase.raise_objection(this);							
-		tb_seq = uart_seq2::type_id::create("SEQ-UART");
-		tb_seq.randdata 	<= 1'b0;
-		tb_seq.randparity 	<= 1'b1;
-		tb_seq.randubrr 	<= 1'b0;
+		tb_seq = uart_seq1::type_id::create("SEQ-UART");
 	fork 
 		begin 
-			`uvm_info("TEST", $sformatf("TEST2 : RANDOMIZE Parity"), UVM_LOW)
+			`uvm_info("TEST", $sformatf("TEST2 : RANDOMIZE Baudrate"), UVM_LOW)
 			forever begin
 				tb_seq.start(tb_env.tb_agent.tb_seq);
 			end
@@ -124,7 +121,7 @@ endclass : uart_test2
 //----------------------------------------------------------
 class uart_test3 extends uart_test_base;
 	`uvm_component_utils(uart_test3)
-	uart_seq2	tb_seq; 
+	uart_seq1	tb_seq; 
 
   function new(string name = "uart_test3_rand_burr", uvm_component parent =  null);
     super.new(name, parent);
@@ -134,13 +131,10 @@ class uart_test3 extends uart_test_base;
     super.run_phase(phase);
 		`uvm_info("TEST : ", $sformatf("RUN PHASE"), UVM_HIGH)
 		phase.raise_objection(this);							
-		tb_seq = uart_seq2::type_id::create("SEQ-UART");
-		tb_seq.randdata 	<= 1'b0;
-		tb_seq.randparity 	<= 1'b0;
-		tb_seq.randubrr 	<= 1'b1;
+		tb_seq = uart_seq1::type_id::create("SEQ-UART");
 	fork 
 		begin 
-			`uvm_info("TEST", $sformatf("TEST1 : RANDOMIZE Baudrate"), UVM_LOW)
+			`uvm_info("TEST", $sformatf("TEST1 : RANDOMIZE datalength"), UVM_LOW)
 			forever begin
 				tb_seq.start(tb_env.tb_agent.tb_seq);
 			end
@@ -171,9 +165,6 @@ class uart_test4 extends uart_test_base;
 		`uvm_info("TEST : ", $sformatf("RUN PHASE"), UVM_HIGH)
 	phase.raise_objection(this);							
 	tb_seq = uart_seq2::type_id::create("SEQ-UART");
-	tb_seq.randdata 	<= 1'b1;
-	tb_seq.randparity 	<= 1'b1;
-	tb_seq.randubrr 	<= 1'b1;
 	fork 
 		begin 
 			`uvm_info("TEST", $sformatf("TEST1 : RANDOMIZE data"), UVM_LOW)
@@ -190,4 +181,37 @@ class uart_test4 extends uart_test_base;
 	phase.drop_objection(this);
   endtask
 endclass : uart_test4
+
+//----------------------------------------------------------
+//--------------------------------All test-------------
+//----------------------------------------------------------
+class uart_test5 extends uart_test_base;
+	`uvm_component_utils(uart_test5)
+	uart_seq3	tb_seq; 
+
+  function new(string name = "uart_test5_rand_all", uvm_component parent =  null);
+    super.new(name, parent);
+  endfunction
+	
+  task run_phase(uvm_phase phase);
+    super.run_phase(phase);
+		`uvm_info("TEST : ", $sformatf("RUN PHASE"), UVM_HIGH)
+	phase.raise_objection(this);							
+	tb_seq = uart_seq3::type_id::create("SEQ-UART");
+	fork 
+		begin 
+			forever begin
+				tb_seq.start(tb_env.tb_agent.tb_seq);
+			end
+		end
+		
+		begin
+			@(posedge this.tb_cfg.testfinishrx); //after finish receiving the packets
+			phase.drop_objection(this);
+		end
+	join
+	phase.drop_objection(this);
+  endtask
+endclass : uart_test5
+
 `endif

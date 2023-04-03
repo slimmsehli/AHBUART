@@ -15,7 +15,7 @@ class uart_scoreboard extends uvm_scoreboard;
 	
 	//====analysis port for the monitoring output agent=====================//
 	`uvm_analysis_imp_decl(_UART_INPUT_TX);
-	uvm_analysis_imp_UART_INPUT_TX#(uart_item_driver, uart_scoreboard) u_input_port_tx;
+	uvm_analysis_imp_UART_INPUT_TX#(uart_item_driver_base, uart_scoreboard) u_input_port_tx;
 	
 		//------------------------------ Reading RX output to testbench 
 	virtual function void write_UART_INPUT_RX(uart_item data);
@@ -27,7 +27,7 @@ class uart_scoreboard extends uvm_scoreboard;
 	endfunction : write_UART_INPUT_RX 
 	
 		//------------------------------ Reading TX input from testbench 
-	virtual function void write_UART_INPUT_TX(uart_item_driver data);
+	virtual function void write_UART_INPUT_TX(uart_item_driver_base data);
 		this.tb_cfg.Monitor_tx[this.tb_cfg.Monitor_tx_counter] <= data.TX_DIN;
 		this.tb_cfg.Monitor_tx_counter++;
 endfunction : write_UART_INPUT_TX
@@ -43,21 +43,17 @@ endfunction : write_UART_INPUT_TX
 		u_input_port_tx = new ("SB_ANALYSIS-PORT-UART_DRIVER", this);
 		
 		`uvm_info("SCOREBOARD : ", $sformatf("BUILD PHASE"), UVM_HIGH)
+		
+		// Get config 
+		`getconfig("SCOREBOARD")
 
-		// Get the interface from the db and assign it to the local cfg
-		if(!uvm_resource_db#(uart_cfg)::read_by_name(get_full_name(), "tb_cfg", tb_cfg)) 
-			`uvm_error("SCOREBOARD", $sformatf("%s %s", "no valid config at=", get_full_name()))
-		else
-			this.tb_cfg = tb_cfg;
-
-		// Get the interface from db 
-		if(!uvm_config_db#(virtual MS_UART_INTERFACE)::get(this, "", "uart_vif", uart_vif)) 
-			`uvm_error("SCOREBOARD", "No interface found");
+		// Get interface
+		`getinterface("SCOREBOARD")
 		
 	endfunction
 
 	virtual task run_phase(uvm_phase phase);
-		uart_item_driver uart_data;
+		//uart_item_driver_base uart_data;
 		super.run_phase(phase);
 		`uvm_info("SCOREBOARD : ", $sformatf("RUN PHASE"), UVM_HIGH)
 		fork
@@ -69,10 +65,11 @@ endfunction : write_UART_INPUT_TX
 		`uvm_info("SCOREBOARD : ", $sformatf("FINAL PHASE"), UVM_HIGH)
 		
 		for(int i=1;i <= this.tb_cfg.uart_packets;i++) begin
-			if (this.tb_cfg.Monitor_rx[i] === this.tb_cfg.Monitor_tx[i]) 
-				`uvm_info("SCOREBOARD", $sformatf("TX(%d)=%h, RX(%d)=%h",i, this.tb_cfg.Monitor_tx[i], i, this.tb_cfg.Monitor_rx[i]), UVM_LOW)
-			else	
+			if (this.tb_cfg.Monitor_rx[i] !== this.tb_cfg.Monitor_tx[i]) 
 				`uvm_error("SCOREBOARD", $sformatf("TX(%d)=%h !!! RX(%d)=%h",i, this.tb_cfg.Monitor_tx[i], i, this.tb_cfg.Monitor_rx[i]))
+			/*	`uvm_info("SCOREBOARD", $sformatf("TX(%d)=%h, RX(%d)=%h",i, this.tb_cfg.Monitor_tx[i], i, this.tb_cfg.Monitor_rx[i]), UVM_LOW)
+			else*/	
+
 		end
 	endfunction : final_phase
 	

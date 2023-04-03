@@ -45,7 +45,11 @@ class uart_item extends uvm_sequence_item;
 	endfunction : new
 endclass : uart_item 
 
-class uart_item_driver extends uvm_sequence_item;
+//----------------------------------------------------
+// base class for uart driver item base class
+//----------------------------------------------------
+
+class uart_item_driver_base extends uvm_sequence_item;
 	logic				RESETN; 		
 	rand logic		[7:0]	TX_DIN;
 	rand logic 		[15:0]	UBRR;
@@ -57,7 +61,7 @@ class uart_item_driver extends uvm_sequence_item;
 	rand logic 				write_fifo;
 	rand logic 				read_fifo;
 
-	`uvm_object_utils_begin(uart_item_driver)
+	`uvm_object_utils_begin(uart_item_driver_base)
     `uvm_field_int(RESETN, 		UVM_ALL_ON)
 	`uvm_field_int(TX_DIN, 		UVM_ALL_ON)
 	`uvm_field_int(UBRR,		UVM_ALL_ON)
@@ -79,29 +83,108 @@ class uart_item_driver extends uvm_sequence_item;
 		this.PARITYSEL		= 2'b00;
 		this.write_fifo		= 1'b0;
 		this.read_fifo		= 1'b0;
-		
 	endfunction : new
+	
+endclass : uart_item_driver_base
 
+//----------------------------------------------------
+// Driver item 1 with constriants 1
+//----------------------------------------------------
+
+class uart_item_driver1 extends uart_item_driver_base;
+	
+	function new(string name = "");
+		super.new(name);
+		this.RESETN			= 1'b0;
+		this.TX_DIN			= 8'h00;
+		this.UBRR			= 16'h0000;
+		this.DATASEL		= 2'b00;
+		this.STOPSEL		= 1'b0;
+		this.OVRSEL			= 1'b0;
+		this.PARITYSEL		= 2'b00;
+		this.write_fifo		= 1'b0;
+		this.read_fifo		= 1'b0;
+	endfunction : new
 	constraint UART_constraint1 {
    
-	//TX_DIN 			inside {[0:255]};
-	//TX_DIN			dist {[0:127] :/ 50, [128:255]:/50}; //equal distribution
+	TX_DIN 			inside {[0:255]};
 		//Testing baudrates
 		// 9600, 19200, 38400, 57600, 115200, 128000, 256000
 	UBRR			dist {16'h145:=1,16'ha2:=1,16'h51:=1,16'h36:=1,16'h1B:=1,16'h18:=1,16'hC:=1}; // test multiple baudrates	
-	//UBRR			== 16'hC; // highest baudrate
-		// read and write constrtaints
-	//write_fifo 		== 1'b1;
-	//read_fifo 		== 1'b1;
 		// configuration constraints
 	//DATASEL 		dist {2'b00:=1, 2'b01:=1, 2'b10:=1, 2'b11:=1};	// 6, 7 or 8 bits data only
 	DATASEL 		== 2'b11;
 	STOPSEL			== 0; // only 1 stop bit
 	OVRSEL 			== 0; // oversampling only by 16
-	//PARITYSEL		inside {2'b00, 2'b01, 2'b10}; //use parity only
+	PARITYSEL		inside {2'b00, 2'b01, 2'b10}; //use parity only
 	PARITYSEL		dist {2'b00:=1, 2'b01:=1, 2'b10:=1}; //use parity only
-	
 	}
-endclass : uart_item_driver 
+endclass : uart_item_driver1 
+
+//----------------------------------------------------
+// Driver item 2 with constriants 2
+//----------------------------------------------------
+
+class uart_item_driver2 extends uart_item_driver_base;
+	
+	function new(string name = "");
+		super.new(name);
+		this.RESETN			= 1'b0;
+		this.TX_DIN			= 8'h00;
+		this.UBRR			= 16'h0000;
+		this.DATASEL		= 2'b00;
+		this.STOPSEL		= 1'b0;
+		this.OVRSEL			= 1'b0;
+		this.PARITYSEL		= 2'b00;
+		this.write_fifo		= 1'b0;
+		this.read_fifo		= 1'b0;
+	endfunction : new
+	constraint UART_constraint1 {
+	TX_DIN 			dist {[250:255]:=50,[100:250]:=40,[55:86]:=30};
+	//TX_DIN			dist {[0:127] :/ 50, [128:255]:/50}; //equal distribution
+		//Testing baudrates
+		// 9600, 19200, 38400, 57600, 115200, 128000, 256000
+		// 
+	UBRR			dist {16'h145:=1,16'ha2:=1,16'h51:=1,16'h36:=1,16'h1B:=1,16'h18:=1,16'hC:=1}; // test multiple baudrates	
+	//UBRR			== 16'hC; // highest baudrate
+	DATASEL 		== 2'b11;
+	STOPSEL			== 0; // only 1 stop bit
+	OVRSEL 			== 0; // oversampling only by 16
+	PARITYSEL		dist {2'b00:=1, 2'b01:=1, 2'b10:=1}; //use parity only
+	}
+endclass : uart_item_driver2
+
+//----------------------------------------------------
+// Driver item 3 with constriants 3
+//----------------------------------------------------
+
+class uart_item_driver3 extends uart_item_driver_base;
+	
+	function new(string name = "");
+		super.new(name);
+		this.RESETN			= 1'b0;
+		this.TX_DIN			= 8'h00;
+		this.UBRR			= 16'h0000;
+		this.DATASEL		= 2'b00;
+		this.STOPSEL		= 1'b0;
+		this.OVRSEL			= 1'b0;
+		this.PARITYSEL		= 2'b00;
+		this.write_fifo		= 1'b0;
+		this.read_fifo		= 1'b0;
+	endfunction : new
+	constraint UART_constraint1 {
+	TX_DIN 			inside {[0:50]};
+	//TX_DIN			dist {[0:127] :/ 50, [128:255]:/50}; //equal distribution
+		//Testing baudrates
+		// 9600, 19200, 38400, 57600, 115200, 128000, 256000
+		// 
+	//UBRR			dist {16'h145:=1,16'ha2:=1,16'h51:=1,16'h36:=1,16'h1B:=1,16'h18:=1,16'hC:=1}; // test multiple baudrates	
+	UBRR			== 16'ha2; // test multiple baudrates
+	DATASEL 		== 2'b11;
+	STOPSEL			== 0; // only 1 stop bit
+	OVRSEL 			== 0; // oversampling only by 16
+	PARITYSEL		dist {2'b00:=1, 2'b01:=1, 2'b10:=1}; //use parity only
+	}
+endclass : uart_item_driver3
 
 `endif

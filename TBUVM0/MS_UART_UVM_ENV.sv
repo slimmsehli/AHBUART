@@ -1,3 +1,4 @@
+
 /*-------------------------------------*/
 /*-----------UART ENV------------------*/
 /*-------------------------------------*/
@@ -10,7 +11,7 @@ class uart_env extends uvm_env;
 	uart_cfg	tb_cfg;
 	uart_agent 	tb_agent;
 	uart_scoreboard tb_sb;
-	//uart_coverage ucov;
+	uart_coverage tb_cov;
 	
   function new( string name = "uart_env", uvm_component parent = null);
      super.new(name, parent);
@@ -20,25 +21,16 @@ class uart_env extends uvm_env;
     super.build_phase(phase);
 
 	`uvm_info("ENV : ", $sformatf("BUILD PHASE:"), UVM_HIGH)
-
-    if(!uvm_resource_db#(uart_cfg)::read_by_name(get_full_name(), "tb_cfg", tb_cfg)) 
-      `uvm_error("ENV", $sformatf("%s %s", "no valid config at=", get_full_name()))
-	else
-		this.tb_cfg = tb_cfg;
-
-	if(!uvm_config_db#(virtual MS_UART_INTERFACE)::get(this, "", "uart_vif", uart_vif)) 
-		`uvm_error("[ENV]", "No interface found");
 	
-	if(uart_vif != null) begin
-		uvm_config_db#(virtual MS_UART_INTERFACE)::set(this, "*", "uart_vif", uart_vif);		
-	end
-	else 
-		`uvm_error("ENV", "Empty interface found")
+	// Get config 
+	`getconfig("ENV")
+	
+	// Get interface
+	`getinterface("ENV")
  
-	tb_agent = uart_agent::type_id::create("tb_agent", this);
-	tb_sb	 = uart_scoreboard::type_id::create("tb_scoreboard", this);
-	//ucov		 = uart_coverage::type_id::create("tb_coverage", this);
-	//uvm_config_db#(int)::set(this, "AGENT-VDD", "is_active", UVM_PASSIVE);
+	tb_agent 	= uart_agent::type_id::create("tb_agent", this);
+	tb_sb	 	= uart_scoreboard::type_id::create("tb_scoreboard", this);
+	tb_cov		= uart_coverage::type_id::create("tb_cov", this);
 	
     endfunction
 
@@ -48,6 +40,7 @@ class uart_env extends uvm_env;
 	
     tb_agent.analysis_port_m.connect(tb_sb.u_input_port_rx);
 	tb_agent.analysis_port_d.connect(tb_sb.u_input_port_tx);
+	tb_agent.analysis_port_d.connect(tb_cov.analysis_export);
   endfunction : connect_phase
 
   virtual task run_phase(uvm_phase phase);

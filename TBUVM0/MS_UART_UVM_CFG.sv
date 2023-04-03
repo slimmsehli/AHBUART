@@ -27,7 +27,7 @@ import "DPI-C" function string getenv(input string env_name);
 		
         function new(string name = "ana_cfg");
             super.new(name); 
-			uart_packets = 20;
+			uart_packets = 256;
 			testok = 1'b1;
 			testextend = 1'b1;
             testfinishrx = 1'b0;

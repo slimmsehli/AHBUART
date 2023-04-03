@@ -1,3 +1,5 @@
+
+
 /*-------------------------------------*/
 /*-----------UART MONITOR--------------*/
 /*-------------------------------------*/
@@ -25,14 +27,11 @@ class uart_monitor extends uvm_monitor;
     uart_data = uart_item::type_id::create("tb_item_monitor");
     analysis_port = new("tb_monitor_analysis", this);
 
-	// Get the interface from the db
-		if(!uvm_resource_db#(uart_cfg)::read_by_name(get_full_name(), "tb_cfg", tb_cfg)) 
-			`uvm_error("MONITOR", $sformatf("%s %s", "no valid config at=", get_full_name()))
-		else
-			this.tb_cfg = tb_cfg;
+		// Get config 
+		`getconfig("SCOREBOARD")
 		
-		if(!uvm_config_db#(virtual MS_UART_INTERFACE)::get(this, "", "uart_vif", uart_vif)) 
-			`uvm_error("MONITROR", "No interface found");
+		// Get interface
+		`getinterface("SCOREBOARD")
 
   endfunction
   
