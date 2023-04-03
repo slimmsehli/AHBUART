@@ -107,9 +107,9 @@ always @(posedge internalclk) begin
 			state		<= `DATA_BITS; //change state to data frame
 		end
 		`DATA_BITS : begin // 4 -
-			//if (dataindex == 3'b011)
-			//	DOUT <= 1'b1;
-			//else
+			/*if (dataindex == 3'b011)
+				DOUT <= 1'b1;
+			else*/
 				DOUT 		<= data[dataindex];
 			if (dataindex==tempdatalength) begin
 				dataindex	<= 3'b0;
